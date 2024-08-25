@@ -8,5 +8,6 @@ import { Col } from './column.entity';
     imports: [TypeOrmModule.forFeature([Col])],
     controllers: [ColumnsController],
     providers: [ColumnService],
+    exports: [ColumnService],
 })
 export class ColumnModule {}

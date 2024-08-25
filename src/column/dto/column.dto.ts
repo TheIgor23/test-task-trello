@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { UserDto } from 'src/user/dto/user.dto';
 
 export class ColumnDto {
     @ApiProperty({

@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { User } from 'src/user/user.entity';
+import { Col } from 'src/column/column.entity';
 import {
     Entity,
     PrimaryGeneratedColumn,
@@ -10,12 +10,15 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Col {
+export class Card {
     @PrimaryGeneratedColumn()
     id!: number;
 
     @Column()
     title!: string;
+
+    @Column({ default: '' })
+    body?: string;
 
     @CreateDateColumn()
     createdAt!: Date;
@@ -23,11 +26,11 @@ export class Col {
     @UpdateDateColumn()
     updatedAt!: Date;
 
-    @ManyToOne(() => User, {
+    @ManyToOne(() => Col, {
         nullable: false,
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
     @Exclude()
-    owner!: User;
+    column!: Col;
 }
