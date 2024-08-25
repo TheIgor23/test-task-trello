@@ -30,12 +30,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @ApiOperation({ summary: 'Get user with specified id' })
     @ApiBearerAuth()
-    @ApiParam({ name: 'id', required: true, description: 'User identifier' })
+    @ApiParam({
+        name: 'userId',
+        required: true,
+        description: 'User identifier',
+    })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Success. User founded',
@@ -45,9 +50,8 @@ export class UserController {
         status: HttpStatus.NOT_FOUND,
         description: 'User not found',
     })
-    @UseInterceptors(ClassSerializerInterceptor)
-    @Get(':id')
-    async getUser(@Param('id', ParseIntPipe) id: number) {
+    @Get(':userId')
+    async getUser(@Param('userId', ParseIntPipe) id: number) {
         const user = await this.userService.getUser(id);
         if (!user) throw new NotFoundException('User not found');
         return user;
@@ -55,14 +59,13 @@ export class UserController {
 
     @ApiOperation({ summary: 'Create user with specified id' })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: HttpStatus.CREATED,
         description: 'Success. User created',
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
         description: 'Email or password incorrect',
     })
-    @HttpCode(HttpStatus.OK)
     @Public()
     @Post()
     createUser(@Body() userDto: CreateUserDto) {
@@ -98,11 +101,15 @@ export class UserController {
         status: HttpStatus.FORBIDDEN,
         description: 'User don`t have access',
     })
-    @ApiParam({ name: 'id', required: true, description: 'User identifier' })
+    @ApiParam({
+        name: 'userId',
+        required: true,
+        description: 'User identifier',
+    })
     @ApiBearerAuth()
     @UseGuards(IsOwner)
-    @Delete(':id')
-    deleteUser(@Param('id', ParseIntPipe) id: number) {
+    @Delete(':userId')
+    deleteUser(@Param('userId', ParseIntPipe) id: number) {
         return this.userService.deleteUser(id);
     }
 
@@ -125,11 +132,10 @@ export class UserController {
     @ApiOperation({ summary: 'Update user with specified id' })
     @ApiParam({ name: 'id', required: true, description: 'User identifier' })
     @UseGuards(IsOwner)
-    @Put(':id')
-    @UseInterceptors(ClassSerializerInterceptor)
+    @Put(':userId')
     @ApiBearerAuth()
     updateUser(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('userId', ParseIntPipe) id: number,
         @Body() userDto: UpdateUserDto,
     ) {
         return this.userService.updateUser(id, userDto);

@@ -5,10 +5,12 @@ import { UserModule } from './user/user.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { ColumnModule } from './column/column.module';
 
 @Module({
     imports: [
         UserModule,
+        ColumnModule,
         ConfigModule.forRoot(),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],

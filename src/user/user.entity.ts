@@ -16,20 +16,20 @@ const bcryptRegex = /^\$(?:2a|2x|2y|2b)\$\d+\$/u;
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
-    id: number;
+    id!: number;
 
     @Column({ unique: true })
-    email: string;
+    email!: string;
 
     @Column()
-    @Exclude({ toPlainOnly: true })
-    password: string;
+    @Exclude()
+    password!: string;
 
     @CreateDateColumn()
-    createdAt: Date;
+    createdAt!: Date;
 
     @UpdateDateColumn()
-    updatedAt: Date;
+    updatedAt!: Date;
 
     #salt: string | undefined;
 

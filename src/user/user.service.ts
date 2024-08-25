@@ -23,9 +23,10 @@ export class UserService {
         if ((await this.getUserByEmail(email)) !== null)
             throw new BadRequestException('User already exist');
         const newUser = this.userRepository.create({ email, password });
-        const dbUser = await this.userRepository.save(newUser);
+        const user = await this.userRepository.save(newUser);
         return {
-            token: await this.generateAccessToken(dbUser),
+            user,
+            token: await this.generateAccessToken(user),
         };
     }
 
@@ -48,6 +49,7 @@ export class UserService {
             throw new BadRequestException('Invalid password');
 
         return {
+            user,
             token: await this.generateAccessToken(user),
         };
     }

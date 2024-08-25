@@ -5,6 +5,6 @@ export class IsOwner implements CanActivate {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         if (!request.user) return false;
-        return request.params.id == request.user.id;
+        return request.params.userId == request.user.id;
     }
 }
