@@ -24,9 +24,10 @@ import {
 } from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 import { Public } from 'src/auth/decorator/public.deocorator';
-import { IsOwner } from 'src/auth/guards/isOwner.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import IsOwner from 'src/auth/guards/is-owner.guard';
+import { User } from './user.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -51,6 +52,7 @@ export class UserController {
         description: 'User not found',
     })
     @Get(':userId')
+    @UseGuards(IsOwner(User, 'userId'))
     async getUser(@Param('userId', ParseIntPipe) id: number) {
         const user = await this.userService.getUser(id);
         if (!user) throw new NotFoundException('User not found');
@@ -107,8 +109,8 @@ export class UserController {
         description: 'User identifier',
     })
     @ApiBearerAuth()
-    @UseGuards(IsOwner)
     @Delete(':userId')
+    @UseGuards(IsOwner(User, 'userId'))
     deleteUser(@Param('userId', ParseIntPipe) id: number) {
         return this.userService.deleteUser(id);
     }
@@ -130,10 +132,14 @@ export class UserController {
         description: 'Email or password didn`t pass validation',
     })
     @ApiOperation({ summary: 'Update user with specified id' })
-    @ApiParam({ name: 'id', required: true, description: 'User identifier' })
-    @UseGuards(IsOwner)
+    @ApiParam({
+        name: 'userId',
+        required: true,
+        description: 'User identifier',
+    })
     @Put(':userId')
     @ApiBearerAuth()
+    @UseGuards(IsOwner(User, 'userId'))
     updateUser(
         @Param('userId', ParseIntPipe) id: number,
         @Body() userDto: UpdateUserDto,

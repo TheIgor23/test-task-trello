@@ -7,12 +7,14 @@ import { AuthGuard } from './auth/guards/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { ColumnModule } from './column/column.module';
 import { CardModule } from './card/card.module';
+import { CommentModule } from './comments/comment.module';
 
 @Module({
     imports: [
         UserModule,
         ColumnModule,
         CardModule,
+        CommentModule,
         ConfigModule.forRoot(),
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],

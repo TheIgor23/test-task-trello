@@ -21,9 +21,10 @@ import {
 } from '@nestjs/swagger';
 import { ColumnService } from './column.service';
 import { CreateColumnDto } from './dto/create-column.dto';
-import { IsOwner } from 'src/auth/guards/isOwner.guard';
 import { UpdateColumnDto } from './dto/update-column.dto';
 import { ColumnDto } from './dto/column.dto';
+import IsOwner from 'src/auth/guards/is-owner.guard';
+import { Col } from './column.entity';
 
 @ApiParam({
     name: 'userId',
@@ -35,6 +36,7 @@ import { ColumnDto } from './dto/column.dto';
     description: 'User don`t have access',
 })
 @ApiBearerAuth()
+@UseGuards(IsOwner(Col, 'userId'))
 @ApiTags('Columns')
 @Controller('users/:userId/columns')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -48,7 +50,6 @@ export class ColumnsController {
         type: ColumnDto,
         isArray: true,
     })
-    @UseGuards(IsOwner)
     @Get()
     getAllColumnsByUserId(@Param('userId', ParseIntPipe) userId: number) {
         return this.columnsService.getAllColumnsByUserId(userId);
@@ -62,9 +63,8 @@ export class ColumnsController {
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: 'Title name incorrect',
+        description: 'Title incorrect',
     })
-    @UseGuards(IsOwner)
     @Post()
     createColumn(
         @Param('userId', ParseIntPipe) userId: number,
@@ -79,7 +79,6 @@ export class ColumnsController {
         description: 'Success. Column deleted',
         type: ColumnDto,
     })
-    @UseGuards(IsOwner)
     @Delete(':columnId')
     deleteColumn(
         @Param('columnId', ParseIntPipe) columnId: number,
@@ -96,9 +95,8 @@ export class ColumnsController {
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: 'Title name incorrect',
+        description: 'Title incorrect',
     })
-    @UseGuards(IsOwner)
     @Put(':columnId')
     updateColumn(
         @Param('columnId', ParseIntPipe) columnId: number,

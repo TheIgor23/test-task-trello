@@ -21,10 +21,11 @@ import {
 } from '@nestjs/swagger';
 import { CardService } from './card.service';
 import { CreateCardDto } from './dto/create-card.dto';
-import { IsOwner } from 'src/auth/guards/isOwner.guard';
 import { UpdateCardDto } from './dto/update-card.dto';
 import { CardDto } from './dto/card.dto';
-import { IsColumnExist } from 'src/column/guards/is-exist.guard';
+import EntityExist from 'src/guards/entity-exist.guard';
+import { Col } from 'src/column/column.entity';
+import IsOwner from 'src/auth/guards/is-owner.guard';
 
 @ApiParam({
     name: 'userId',
@@ -40,22 +41,22 @@ import { IsColumnExist } from 'src/column/guards/is-exist.guard';
     status: HttpStatus.FORBIDDEN,
     description: 'User don`t have access',
 })
-@UseGuards(IsColumnExist)
 @ApiBearerAuth()
 @ApiTags('Cards')
+@UseGuards(IsOwner(Col, 'columnId', 'owner'))
+@UseGuards(EntityExist(Col, 'columnId'))
 @Controller('users/:userId/columns/:columnId/cards')
 @UseInterceptors(ClassSerializerInterceptor)
 export class CardController {
     constructor(private readonly cardService: CardService) {}
 
-    @ApiOperation({ summary: 'Get all cards by colum id' })
+    @ApiOperation({ summary: 'Get all cards by column id' })
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Success. cards founded',
         type: CardDto,
         isArray: true,
     })
-    @UseGuards(IsOwner)
     @Get()
     getAllCardByColumnId(
         @Param('userId', ParseIntPipe) userId: number,
@@ -72,9 +73,8 @@ export class CardController {
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: 'Title name incorrect',
+        description: 'Title incorrect',
     })
-    @UseGuards(IsOwner)
     @Post()
     createCard(
         @Param('columnId', ParseIntPipe) columnId: number,
@@ -90,7 +90,6 @@ export class CardController {
         description: 'Success. Card deleted',
         type: CardDto,
     })
-    @UseGuards(IsOwner)
     @Delete(':cardId')
     deleteCard(
         @Param('cardId', ParseIntPipe) cardId: number,
@@ -108,21 +107,20 @@ export class CardController {
     })
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: 'Title name incorrect',
+        description: 'Title incorrect',
     })
-    @UseGuards(IsOwner)
     @Put(':cardId')
     updateCard(
         @Param('cardId', ParseIntPipe) cardId: number,
         @Param('columnId', ParseIntPipe) columnId: number,
         @Param('userId', ParseIntPipe) userId: number,
-        @Body() updateColumnDto: UpdateCardDto,
+        @Body() updateCardDto: UpdateCardDto,
     ) {
         return this.cardService.updateCard(
             cardId,
             columnId,
             userId,
-            updateColumnDto,
+            updateCardDto,
         );
     }
 }

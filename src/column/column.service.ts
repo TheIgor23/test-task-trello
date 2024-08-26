@@ -47,9 +47,5 @@ export class ColumnService {
         });
     }
 
-    getOneOrThrow(id: number, userId: number) {
-        return this.columnRepository.findOneOrFail({
-            where: { id, owner: { id: userId } },
-        });
-    }
+    checkIs;
 }
